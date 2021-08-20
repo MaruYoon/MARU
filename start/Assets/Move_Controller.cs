@@ -10,7 +10,10 @@ public class Move_Controller : MonoBehaviour
 {
 
     [SerializeField] private float Speed;
-    [SerializeField] private float Force;
+    private bool Move;
+    private Vector3 TargetPoint;
+    private Vector3 Step;
+    //[SerializeField] private float Force;
     //public으로 사용을 하면 유니티에서 수치 변경이 가능하다.
     //[SerializeField]을 사용하면 private 상태로 public처럼 사용이 가능하다. 
 
@@ -19,7 +22,7 @@ public class Move_Controller : MonoBehaviour
     //private Vector3 vPosition;
     int i = 0;
 
-    private void Awake()
+    void Awake()// 컴퍼넌트를 불러오는 용도 , 생성자와 비슷, 한번만 생성
     {
         Rigid = GetComponent<Rigidbody>();
         //TransInfo = GetComponent<Transform>();
@@ -27,23 +30,29 @@ public class Move_Controller : MonoBehaviour
     }
 
 
-    void Start()
+    void Start()// 수치값을 변경하는 것 // Initialize와 비슷, 여러번 호출됨
     {
         Rigid.useConeFriction = false;
+
+        TargetPoint = this.transform.position;
         //vPosition = new Vector3(1.0f, 0.0f, 0.0f);
         Speed = 15.0f;
-        Force = 2000.0f;
+        Move = false;
+        Step = new Vector3(0.0f, 0.0f, 0.0f);
+
+
+       // Force = 2000.0f;
 
         //힘을 가하여 이동시킴
-       //this.Rigid.AddForce(Vector3.forward * Time.deltaTime * Force);
-       //앞에 물체에 부딫히면 축이 틀어지며 돌아간다. 
+        //this.Rigid.AddForce(Vector3.forward * Time.deltaTime * Force);
+        //앞에 물체에 부딫히면 축이 틀어지며 돌아간다. 
 
         //Update 함수는 프레임 마다 호출 되기 때문에 AddForce 함수를 Update함수에서 호출하게 되면
         //매 프레임 마다 힘을 가하게 되므로 속도가 가중됨
     }
 
 
-    void Update()
+    private void FixedUpdate()
     {
         /*
         TransInfo.position = new Vector3(
@@ -78,6 +87,10 @@ public class Move_Controller : MonoBehaviour
 
         //키 입력에 의한 이동방법
 
+
+
+
+        /*
         //좌우
         float fHor = Input.GetAxis("Horizontal");
         //위아래
@@ -88,6 +101,95 @@ public class Move_Controller : MonoBehaviour
             0.0f,
             fVer * Time.deltaTime * Speed);
         //( x , y , z)
+
+
+
+        //마우스 입력 확인
+        if(Input.GetMouseButtonDown(0))
+        {
+            Debug.Log("좌클릭");
+        }
+
+        if(Input.GetMouseButtonDown(1))
+        {
+            Debug.Log("우클릭");
+        }
+
+        if(Input.GetMouseButtonDown(2))
+        {
+            Debug.Log("휠클릭");
+        }
+         */
+
+        if (Input.GetMouseButton(1))
+        {
+            /* 멈추게 하는 것
+            if (Move == true)
+                return; 
+             */
+
+
+
+            //화면에 있는 마우스 위치로 부터 Ray를 보내기 위해 정보를 기록함.
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            //Ray가 타겟과 출동했을때 반환 값을 저장하는 곳.
+            RaycastHit hit;
+
+            //입력받을땐 in 받아올것이 없다면 out
+            //if(Physics.Raycast(Ray 시작 위치와 방향, 출돌한 지점의 정보, Mathf.Infinity = 무한한))
+            //해섯 : Ray의 위치와 방향으로 부터 Raypoint를 무한하게 발사하고 충돌이 일어나면 Hit에 정보를 저장함
+            if(Physics.Raycast(ray, out hit, Mathf.Infinity))
+            {
+                if(hit.transform.tag == "Ground")
+                {
+                    // 해석 : ray의 위치로 부터 hit된 위치까지 선을 그림. 실제게임에서는 안보임
+                    Debug.DrawLine(ray.origin, hit.point, Color.red);
+                    Debug.Log(hit.point);
+
+                    TargetPoint = hit.point;
+
+
+
+                    //transform.position = new Vector3(hit.point.x, 0.5f, hit.point.z);
+
+                    // transform.position = hit.point;
+
+                }
+            }
+            if(this.transform.position.x >  TargetPoint.x - 0.5f &&
+                this.transform.position.x <  TargetPoint.x + 0.5f &&
+                this.transform.position.z >  TargetPoint.z - 0.5f &&
+                this.transform.position.z <  TargetPoint.z + 0.5f)
+            {
+                Move = false;
+            }
+            else
+            {
+                Move = true;
+
+
+                Step = TargetPoint - this.transform.position;
+                Step.Normalize();
+            }
+        }
+
+        if(Move == true)
+        {
+            //this.transform.LookAt(Step);
+            this.transform.position += Step;
+
+            if (this.transform.position.x > TargetPoint.x - 0.5f &&
+                this.transform.position.x < TargetPoint.x + 0.5f &&
+                this.transform.position.z > TargetPoint.z - 0.5f &&
+                this.transform.position.z < TargetPoint.z + 0.5f)
+            {
+                Move = false;
+            }
+        }
+       
+
+
 
     }
 

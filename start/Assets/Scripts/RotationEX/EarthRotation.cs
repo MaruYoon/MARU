@@ -20,6 +20,10 @@ public class EarthRotation : MonoBehaviour
 
     void Update()
     {
-        this.transform.Rotate(this.transform.up * Time.deltaTime * 10.0f);   
+        float fHor = Input.GetAxis("Horizontal");
+
+
+       // this.transform.Rotate(fHor * Time.deltaTime * 10.0f, Space.Self);   
+        this.transform.Rotate(Vector3.up, fHor * Time.deltaTime * 10.0f);   
     }
 }

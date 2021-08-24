@@ -19,11 +19,11 @@ public class ObjectManager : MonoBehaviour
 
     private ObjectManager() { }
 
-    public GameObject EnemyPrefab;
+    private GameObject EnemyPrefab;
 
     private List<GameObject> EnemyList = new List<GameObject>();
 
-    private GameObject Player;
+    //private GameObject Player;
 
     //GameObject ViewObject = new GameObject("EnemyList");
 

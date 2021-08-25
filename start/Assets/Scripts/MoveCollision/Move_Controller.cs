@@ -80,6 +80,11 @@ public class Move_Controller : MonoBehaviour
 
             //활성화된 오브젝트를 관리하는 리스트에 포함시킴
             ObjectManager.GetInstance.GetEnableList.Add(Obj);
+
+            if(Obj == null)
+            {
+                ObjectManager.GetInstance.AddObject(Instantiate(EnemyPrefab));
+            }
         }
         //비활성화 상태에서 활성화 상태로 변경하고, 변경된 오브젝트는 
         //활성화된 오브젝트만 모여있는 리스트에서 사용이 끝날때까지 관리된다. 

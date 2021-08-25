@@ -19,7 +19,12 @@ public class EnemyController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Destroy(this.gameObject);
+        //Destroy(this.gameObject);
+
+        this.gameObject.SetActive(false);
+        ObjectManager.GetInstance.GetDisableList.Push(this.gameObject);
+
+
     }
 
 }

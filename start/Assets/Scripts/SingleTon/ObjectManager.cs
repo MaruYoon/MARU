@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectManager : MonoBehaviour
+public class ObjectManager 
 {
     private static ObjectManager Instance = null;
 
@@ -10,7 +10,7 @@ public class ObjectManager : MonoBehaviour
     {
         get
         {
-            if (Instance = null)
+            if (Instance == null)
                 Instance = new ObjectManager();
 
             return Instance;
@@ -19,58 +19,66 @@ public class ObjectManager : MonoBehaviour
 
     private ObjectManager() { }
 
-    private GameObject EnemyPrefab;
 
-    private List<GameObject> EnemyList = new List<GameObject>();
+
+    //private List<GameObject> EnemyList = new List<GameObject>();
+    //EnemyList 를 DisableList 리스트로 교체(ObjectPool)
+
+
+    //사용가능
+    private List<GameObject> EnableList = new List<GameObject>();
+    public List<GameObject> GetEnableList 
+    { 
+        get
+        {
+            return EnableList;
+        }
+            
+    }
+
+    //사용할수 없는
+    private Stack<GameObject> DisableList = new Stack<GameObject>();
+    public Stack<GameObject> GetDisableList 
+    { 
+        get
+        {
+            return DisableList;
+        }
+    }
+
 
     //private GameObject Player;
-
     //GameObject ViewObject = new GameObject("EnemyList");
 
 
-    private void Awake()
-    {
-        GameObject ViewObject = new GameObject("EnemyList");
-        EnemyPrefab = Resources.Load("Prefab/Enemy") as GameObject;
-    }
 
-
-    private void Start()
+    //Enemy초기 생성
+    public void AddObject(GameObject _Object)
     {
 
-        //Player.transform.position = GameObject.Find("Player").transform.position;
+        _Object.AddComponent<EnemyController>();
 
-        for (int i = 0; i < 10; ++i)
-        {
-            GameObject Obj = Instantiate(EnemyPrefab);
+        _Object.transform.parent = GameObject.Find("DisableList").transform;
 
-            Obj.AddComponent<EnemyController>();
+        //생성된 Enemy의 충돌체에 있는 Trigger기능을 켬
+        _Object.GetComponent<SphereCollider>().isTrigger = true;
 
-            Obj.transform.parent = GameObject.Find("EnemyList").transform;
+        _Object.transform.position = new Vector3(
+            Random.Range(-25, 25),
+            0.0f,
+            Random.Range(-25, 25));
 
-            Obj.transform.position = new Vector3(
-                Random.Range(-25, 25),
-                0.0f,
-                Random.Range(-25, 25));
+        //x = -25 ~ +25
+        //z = -25 ~ +25
 
-            //x = -25 ~ +25
-            //z = -25 ~ +25
+        //난수 함수 =  Random.Range(Min, Max)
 
-            //난수 함수 =  Random.Range(Min, Max)
+        //생성된 오브젝트를 비활성화 설정
+        //활성화 되지 않은 상태로 DisableList에 넣는다.
+        _Object.gameObject.SetActive(false);
 
-            EnemyList.Add(Obj);
-        }
-
-
-        //if (Player == Obj)
-        //{
-        //    Debug.Log("충돌");
-        //
-        //    // Destroy(Obj);
-        //}
-
+        //EnemyList.Add(Obj);
+        DisableList.Push(_Object);
 
     }
-
-
 }

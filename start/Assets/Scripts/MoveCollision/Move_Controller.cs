@@ -29,6 +29,7 @@ public class Move_Controller : MonoBehaviour
         //객체를 찾는것(*중복된 이름이 없는지 확인)
         TargetPoint = GameObject.Find("TargetPoint");
 
+
         //TransInfo = GetComponent<Transform>();
         //GetComponent는 유니티 inspextor
 
@@ -70,21 +71,32 @@ public class Move_Controller : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            if(ObjectManager.GetInstance.GetDisableList.Count == 0)
+            {
+                for(int i = 0; i<5; ++i)
+                {
+                    ObjectManager.GetInstance.AddObject(Instantiate(EnemyPrefab));
+                }
+            }
+
             //GetDisableList 에 있는 객체를 하나 버리고
             GameObject Obj = ObjectManager.GetInstance.GetDisableList.Pop();
 
             //버린 객체를 활성화 시켜 사용상태로 변경
-            Obj.SetActive(true);
-            //변경후 parent를 EnableList하위에 포함시키고
-            Obj.transform.parent = GameObject.Find("EnableList").transform;
+            Obj.gameObject.SetActive(true);
 
             //활성화된 오브젝트를 관리하는 리스트에 포함시킴
             ObjectManager.GetInstance.GetEnableList.Add(Obj);
 
-            if(Obj == null)
+            /*
+            if (Obj == null)
             {
-                ObjectManager.GetInstance.AddObject(Instantiate(EnemyPrefab));
+                for (int i = 0; i < 5; ++i)
+                {
+                    ObjectManager.GetInstance.AddObject(Instantiate(EnemyPrefab));
+                }
             }
+             */
         }
         //비활성화 상태에서 활성화 상태로 변경하고, 변경된 오브젝트는 
         //활성화된 오브젝트만 모여있는 리스트에서 사용이 끝날때까지 관리된다. 
@@ -142,6 +154,21 @@ public class Move_Controller : MonoBehaviour
         //충돌된 객체의 이름이 TargetPoint 가 아니라면 무시하고 TargetPoint 일때 멈춤.
         if (other.name == "TargetPoint")
             Move = false;
+
+        if (other.tag == "Enemy")
+        {
+            //부모를 EnableList에서 DisableList로 변경
+            other.transform.parent = GameObject.Find("DisableList").transform;
+
+            //객체 이동
+            ObjectManager.GetInstance.GetDisableList.Push(other.gameObject);
+
+            //EnableList에 있던 객체 참조를 삭제
+            ObjectManager.GetInstance.GetEnableList.Remove(other.gameObject);
+
+            other.gameObject.SetActive(false);
+        }
+
     }
 
 

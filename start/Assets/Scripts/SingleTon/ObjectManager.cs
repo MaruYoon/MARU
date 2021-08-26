@@ -19,11 +19,8 @@ public class ObjectManager
 
     private ObjectManager() { }
 
-
-
     //private List<GameObject> EnemyList = new List<GameObject>();
     //EnemyList 를 DisableList 리스트로 교체(ObjectPool)
-
 
     //사용가능
     private List<GameObject> EnableList = new List<GameObject>();
@@ -64,10 +61,7 @@ public class ObjectManager
         //생성된 Enemy의 충돌체에 있는 Trigger기능을 켬
         _Object.GetComponent<SphereCollider>().isTrigger = true;
 
-        _Object.transform.position = new Vector3(
-            Random.Range(-25, 25),
-            0.0f,
-            Random.Range(-25, 25));
+
 
         //x = -25 ~ +25
         //z = -25 ~ +25

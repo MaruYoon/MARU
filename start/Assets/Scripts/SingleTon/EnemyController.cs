@@ -18,6 +18,7 @@ public class EnemyController : MonoBehaviour
 
     private float IdleTime;
 
+    private GameObject Bullet;
 
 
     private void Awake()
@@ -27,6 +28,10 @@ public class EnemyController : MonoBehaviour
         //wayPoint 라는 이름의 가상의 목표지점을 생성
         WayPoint = new GameObject("WayPoint");
         WayPoint.transform.tag = "WayPoint";
+
+
+        Bullet = GameObject.Find("Bullet");
+   
 
         //가상의 목표지점에 콜라이더를 삽입
         WayPoint.AddComponent<SphereCollider>();
@@ -45,6 +50,8 @@ public class EnemyController : MonoBehaviour
 
         Speed = 0.05f;
         Rigid.useGravity = false;
+
+        Bullet.transform.position = this.transform.position;
 
         Initialize();
     }
@@ -68,6 +75,10 @@ public class EnemyController : MonoBehaviour
 
             if (IdleTime < 0)
             {
+                Bullet.transform.forward * 5.0f;
+      
+
+
                 WayPoint.transform.position = new Vector3(Random.Range(-25, 25), 0.0f, Random.Range(-25, 25));
 
                 Move = true;
@@ -77,6 +88,12 @@ public class EnemyController : MonoBehaviour
 
                 //3~5초 대기시간 세팅
                 IdleTime = Random.Range(3, 5);
+
+
+
+
+                
+
             }
 
         }

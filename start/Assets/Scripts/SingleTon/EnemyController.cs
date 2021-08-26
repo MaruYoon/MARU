@@ -13,6 +13,7 @@ public class EnemyController : MonoBehaviour
     private Vector3 Step;
 
     private float Speed;
+    private float BulletSpeed;
 
     private Rigidbody Rigid;
 
@@ -29,9 +30,9 @@ public class EnemyController : MonoBehaviour
         WayPoint = new GameObject("WayPoint");
         WayPoint.transform.tag = "WayPoint";
 
+        Bullet = new GameObject("Bullet");
+        Bullet.transform.tag = "Bullet";
 
-        Bullet = GameObject.Find("Bullet");
-   
 
         //가상의 목표지점에 콜라이더를 삽입
         WayPoint.AddComponent<SphereCollider>();
@@ -49,6 +50,8 @@ public class EnemyController : MonoBehaviour
         IdleTime = 3.0f;
 
         Speed = 0.05f;
+        BulletSpeed = 1.0f;
+
         Rigid.useGravity = false;
 
         Bullet.transform.position = this.transform.position;
@@ -75,8 +78,6 @@ public class EnemyController : MonoBehaviour
 
             if (IdleTime < 0)
             {
-                Bullet.transform.forward * 5.0f;
-      
 
 
                 WayPoint.transform.position = new Vector3(Random.Range(-25, 25), 0.0f, Random.Range(-25, 25));
@@ -89,10 +90,10 @@ public class EnemyController : MonoBehaviour
                 //3~5초 대기시간 세팅
                 IdleTime = Random.Range(3, 5);
 
+                Bullet.transform.position += Step * BulletSpeed;
+              
 
 
-
-                
 
             }
 
@@ -131,7 +132,7 @@ public class EnemyController : MonoBehaviour
             Move = false;
         }
 
-        if(other.tag == "Ground")
+        if(other.tag == "Bullet")
         {
             Destroy(other.gameObject);
         }

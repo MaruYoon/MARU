@@ -19,11 +19,12 @@ public class BulletController : MonoBehaviour
     {
         Rigid.useGravity = false;
 
-        Collider CollObj = GetComponent<CapsuleCollider>();
+        Collider CollObj = GetComponent<SphereCollider>();
 
         CollObj.isTrigger = true;
 
-        Rigid.AddForce(this.transform.forward * 500.0f);
+        //Rigid.AddForce(this.transform.forward * 500.0f);
+        Rigid.AddForce(GameObject.Find("Enemy").transform.forward * 500.0f);
     }
 
     private void OnTriggerEnter(Collider other)

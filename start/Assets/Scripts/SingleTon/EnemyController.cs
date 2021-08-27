@@ -17,6 +17,8 @@ public class EnemyController : MonoBehaviour
 
     private Rigidbody Rigid;
 
+
+
     private GameObject BulletPrefab;
 
     private bool BulletCheck;
@@ -135,12 +137,17 @@ public class EnemyController : MonoBehaviour
             StartCoroutine("EnemyState");
         }
 
-   
+
     }
 
     IEnumerator GoBullet()
     {
         yield return new WaitForSeconds(Random.Range(3, 5));
+
+        //FistPrefab.transform.position = this.transform.LookAt(Step);
+        BulletPrefab.transform.position = this.transform.position;
+
+
         BulletCheck = true;
     }
 

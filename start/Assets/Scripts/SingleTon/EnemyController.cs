@@ -13,13 +13,15 @@ public class EnemyController : MonoBehaviour
     private Vector3 Step;
 
     private float Speed;
-    private float BulletSpeed;
+
 
     private Rigidbody Rigid;
 
-    private float IdleTime;
+    private GameObject BulletPrefab;
 
-    private GameObject Bullet;
+    private bool BulletCheck;
+
+   
 
 
     private void Awake()
@@ -30,10 +32,6 @@ public class EnemyController : MonoBehaviour
         WayPoint = new GameObject("WayPoint");
         WayPoint.transform.tag = "WayPoint";
 
-        Bullet = new GameObject("Bullet");
-        Bullet.transform.tag = "Bullet";
-
-
         //가상의 목표지점에 콜라이더를 삽입
         WayPoint.AddComponent<SphereCollider>();
         //삽입된 콜라이더레 정보를 받음
@@ -42,75 +40,19 @@ public class EnemyController : MonoBehaviour
         sphere.radius = 0.2f;
 
         sphere.isTrigger = true;
+
+        BulletPrefab = Resources.Load("Prefab/Bullet") as GameObject;
     }
 
     private void Start()
     {
-        //대기 상태 시간
-        IdleTime = 3.0f;
-
         Speed = 0.05f;
-        BulletSpeed = 1.0f;
+
+        BulletCheck = false;
 
         Rigid.useGravity = false;
 
-        Bullet.transform.position = this.transform.position;
-
-        Initialize();
-    }
-
-    private void OnEnable()
-    {
-        Initialize();
-    }
-
-    private void FixedUpdate()
-    {
-        if(Move == true)
-        {
-            this.transform.position += Step * Speed;
-            Debug.DrawLine(this.transform.position,WayPoint.transform.position);
-        }
-
-        else
-        {
-            IdleTime -= Time.deltaTime;
-
-            if (IdleTime < 0)
-            {
-
-
-                WayPoint.transform.position = new Vector3(Random.Range(-25, 25), 0.0f, Random.Range(-25, 25));
-
-                Move = true;
-                Step = WayPoint.transform.position - this.transform.position;
-                Step.Normalize();
-                Step.y = 0;
-
-                //3~5초 대기시간 세팅
-                IdleTime = Random.Range(3, 5);
-
-                Bullet.transform.position += Step * BulletSpeed;
-              
-
-
-
-            }
-
-        }
-    }
-
-
-
-    private void Initialize()
-    {
         this.transform.parent = GameObject.Find("EnableList").transform;
-
-        //이동 목표위치
-        WayPoint.transform.position = new Vector3(
-               Random.Range(-25, 25),
-               0.0f,
-               Random.Range(-25, 25));
 
         //현재 자신의 위치
         this.transform.position = new Vector3(
@@ -118,61 +60,100 @@ public class EnemyController : MonoBehaviour
            0.0f,
            Random.Range(-25, 25));
 
+        Initialize();
+
+        StartCoroutine("GoBullet");
+    }
+
+    private void OnEnable()
+    {
+        this.transform.parent = GameObject.Find("EnableList").transform;
+
+        //현재 자신의 위치
+        this.transform.position = new Vector3(
+           Random.Range(-25, 25),
+           0.0f,
+           Random.Range(-25, 25));
+
+        Initialize();
+    }
+
+    private void Update()
+    {
+        if(BulletCheck == true)
+        {
+            GameObject Obj = Instantiate(BulletPrefab);
+
+            Obj.gameObject.AddComponent<BulletController>();
+
+            BulletCheck = false;
+            StartCoroutine("GoBullet");
+
+        }
+
+    }
+
+
+    private void FixedUpdate()
+    {
+        if (Move == true)
+        {
+            this.transform.position += Step * Speed;
+            Debug.DrawLine(this.transform.position, WayPoint.transform.position);
+        }
+    }
+
+    private void Initialize()
+    {
+
+
+        //이동 목표위치
+        WayPoint.transform.position = new Vector3(
+               Random.Range(-25, 25),
+               0.0f,
+               Random.Range(-25, 25));
 
         Move = true;
         Step = WayPoint.transform.position - this.transform.position;
         Step.Normalize();
         Step.y = 0;
+
+
+        WayPoint.transform.position.Set(
+            WayPoint.transform.position.x,
+            0.0f,
+            WayPoint.transform.position.z);
+
+        this.transform.LookAt(WayPoint.transform.position);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "WayPoint")
+        if (other.tag == "WayPoint")
         {
             Move = false;
+            StartCoroutine("EnemyState");
         }
 
-        if(other.tag == "Bullet")
-        {
-            Destroy(other.gameObject);
-        }
-
-
-
-
-
-        /*
-        if(other.tag != "Enemy")
-        {
-            Move = false;
-
-            WayPoint = new GameObject("WayPoint");
-            WayPoint.tag = "WayPoint";
-
-            WayPoint.transform.position = new Vector3(Random.Range(-25, 25), 0.0f, Random.Range(-25, 25));
-
-            Move = true;
-            Step = WayPoint.transform.position - this.transform.position;
-            Step.Normalize();
-            Step.y = 0;
-        }
-         */
+   
     }
 
-
-
-    /*
-    private void OnTriggerEnter(Collider other)
+    IEnumerator GoBullet()
     {
-        //Destroy(this.gameObject);
-        this.transform.parent = GameObject.Find("DisableList").transform;
-        ObjectManager.GetInstance.GetDisableList;
-        ObjectManager.GetInstance.GetEnableList;
-        this.gameObject.SetActive(false);
-
-        //ObjectManager.GetInstance.GetDisableList.Push(this.gameObject);
-       // �ȵǴ� ������ �ڽ��� ������ �ű�ų� ���� �Ҽ� ���� ����
+        yield return new WaitForSeconds(Random.Range(3, 5));
+        BulletCheck = true;
     }
-     */
 
+
+    IEnumerator EnemyState()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(Random.Range(3, 5));
+
+            Initialize();
+
+        }
+    }
 }
+

@@ -92,7 +92,6 @@ public class EnemyController : MonoBehaviour
             StartCoroutine("GoBullet");
 
         }
-
     }
 
 
@@ -108,12 +107,12 @@ public class EnemyController : MonoBehaviour
     private void Initialize()
     {
 
-
         //이동 목표위치
         WayPoint.transform.position = new Vector3(
                Random.Range(-25, 25),
                0.0f,
                Random.Range(-25, 25));
+
 
         Move = true;
         Step = WayPoint.transform.position - this.transform.position;
@@ -127,6 +126,7 @@ public class EnemyController : MonoBehaviour
             WayPoint.transform.position.z);
 
         this.transform.LookAt(WayPoint.transform.position);
+
     }
 
     private void OnTriggerEnter(Collider other)
@@ -137,6 +137,12 @@ public class EnemyController : MonoBehaviour
             StartCoroutine("EnemyState");
         }
 
+        /*
+        if (other.tag == "Ground")
+        {
+            Destroy(other.gameObject);
+        }
+         */
 
     }
 
@@ -144,8 +150,9 @@ public class EnemyController : MonoBehaviour
     {
         yield return new WaitForSeconds(Random.Range(3, 5));
 
-        //FistPrefab.transform.position = this.transform.LookAt(Step);
+        //BulletPrefab.transform.position = this.transform.LookAt(Step);
         BulletPrefab.transform.position = this.transform.position;
+        BulletPrefab.transform.rotation = this.transform.rotation;
 
 
         BulletCheck = true;

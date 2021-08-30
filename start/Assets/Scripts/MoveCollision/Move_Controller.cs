@@ -105,12 +105,19 @@ public class Move_Controller : MonoBehaviour
 
     private void FixedUpdate()
     {
-
+        /*
         if (Input.GetMouseButton(1))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RayPoint(ray);
         }
+         */
+
+
+        //키보드 입력 로테이션
+        float fHor = Input.GetAxis("Horizontal");
+        this.transform.Rotate(Vector3.up * fHor *  10.0f);
+ 
 
         if (Move == true)
             this.transform.position += Step * Speed;
